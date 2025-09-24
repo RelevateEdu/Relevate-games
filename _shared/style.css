@@ -1,0 +1,4 @@
+html,body{height:100%;margin:0;background:#000;color:#fff;font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,sans-serif}
+header{padding:10px 14px;font-weight:600;font-size:14px;opacity:.9}
+#frame{width:100%;height:calc(100% - 42px);border:0;display:block}
+.light html,.light body{background:#111;color:#111}
