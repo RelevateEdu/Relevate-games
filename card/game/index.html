@@ -1,109 +1,191 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Relevate • Flashcards</title>
-  <style>
-    body{margin:0;font-family:system-ui,sans-serif;background:#111;color:#fff;display:flex;align-items:center;justify-content:center;min-height:100vh}
-    .container{max-width:600px;padding:20px;text-align:center}
-    h2{margin-bottom:20px}
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Relevate • Flashcards</title>
+<style>
+  :root{
+    --bg:#0b0b0c; --surface:#16202b; --surface-2:#1e2933; --fg:#eef2f7; --muted:#9aa7b2;
+    --accent:#ff3b5c; --ring:rgba(255,59,92,.35); --shadow:0 15px 40px rgba(0,0,0,.45);
+  }
+  .light{ --bg:#f7f8fa; --surface:#ffffff; --surface-2:#f1f5f9; --fg:#0b1020; --muted:#5b6570; --accent:#ff3b5c; --ring:rgba(255,59,92,.25); --shadow:0 12px 30px rgba(16,24,40,.12); }
 
-    .card{
-      position:relative;width:100%;min-height:220px;margin:0 auto 24px;
-      perspective:1000px; -webkit-perspective:1000px; cursor:pointer;
-      pointer-events:auto;
-    }
-    .inner{
-      position:relative;width:100%;height:100%;text-align:center;
-      transition:transform .6s; -webkit-transition:-webkit-transform .6s;
-      transform-style:preserve-3d; -webkit-transform-style:preserve-3d;
-    }
-    /* The class belongs on .card, not .inner */
-    .card.flipped .inner{ transform:rotateY(180deg); -webkit-transform:rotateY(180deg); }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0; font-family:ui-sans-serif, system-ui, -apple-system, Segoe UI, Inter, Roboto, sans-serif;
+    background:var(--bg); color:var(--fg); display:flex; align-items:center; justify-content:center;
+  }
+  .wrap{ width:min(920px, 92vw); padding:20px 16px 28px; }
+  h1{ margin:0 0 18px; font-size:clamp(22px, 3.3vw, 34px); letter-spacing:.2px }
+  .sub{ color:var(--muted); margin-bottom:16px }
 
-    .face{
-      position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
-      border-radius:12px; padding:16px; box-shadow:0 8px 24px rgba(0,0,0,.35);
-      backface-visibility:hidden; -webkit-backface-visibility:hidden;
-      white-space:pre-line;
-    }
-    .front{background:#1f2937}
-    .back{background:#374151; transform:rotateY(180deg); -webkit-transform:rotateY(180deg)}
+  /* Card */
+  .stage{ position:relative; }
+  .card{
+    position:relative; width:100%; height:clamp(260px, 48vh, 420px); border-radius:20px;
+    background:linear-gradient(180deg,var(--surface) 0%, var(--surface-2) 100%);
+    box-shadow:var(--shadow); perspective:1200px; -webkit-perspective:1200px; overflow:visible;
+  }
+  .inner{
+    position:absolute; inset:0; border-radius:20px; transition:transform .5s cubic-bezier(.2,.8,.2,1);
+    transform-style:preserve-3d; -webkit-transform-style:preserve-3d;
+  }
+  .card.flipped .inner{ transform:rotateY(180deg); -webkit-transform:rotateY(180deg) }
 
-    .nav{display:flex;justify-content:space-between;gap:12px;margin-top:4px}
-    button{padding:10px 16px;border:0;border-radius:8px;font-size:15px;cursor:pointer;background:#f43f5e;color:#fff}
-    button:hover{background:#e11d48}
-    .progress{margin-top:8px;font-size:14px;color:#9ca3af}
-  </style>
+  .face{
+    position:absolute; inset:0; border-radius:20px; display:flex; align-items:center; justify-content:center;
+    padding:32px; backface-visibility:hidden; -webkit-backface-visibility:hidden;
+  }
+  .front{ }
+  .back{ transform:rotateY(180deg); -webkit-transform:rotateY(180deg) }
+
+  .q,.a{
+    max-width:840px; width:100%; text-align:center; line-height:1.45; white-space:pre-line;
+    font-size:clamp(18px, 2.2vw, 26px); font-weight:600;
+  }
+  .a{ font-weight:500 }
+
+  /* Controls */
+  .controls{
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+    margin-top:16px; flex-wrap:wrap;
+  }
+  .group{ display:flex; gap:10px; flex-wrap:wrap }
+  button{
+    appearance:none; border:0; border-radius:12px; padding:12px 16px; font-size:15px; font-weight:600;
+    background:var(--surface-2); color:var(--fg); cursor:pointer; transition:transform .06s ease, box-shadow .2s, background .2s;
+  }
+  button:active{ transform:translateY(1px) }
+  .primary{ background:var(--accent); color:#fff; }
+  .outline{ background:transparent; box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.14) }
+  .ghost{ background:transparent; color:var(--muted) }
+  .ring{ box-shadow:0 0 0 6px var(--ring) }
+  .progress{ color:var(--muted); font-size:14px; }
+
+  /* Focus visibility */
+  button:focus-visible{ outline:none; box-shadow:0 0 0 4px var(--ring) }
+
+  /* Prevent overlay buttons from blocking card taps */
+  .controls, .controls *{ pointer-events:auto }
+</style>
 </head>
 <body>
-  <div class="container">
-    <h2>Enterprise & SMEs Flashcards</h2>
+  <div class="wrap" id="root">
+    <h1>Enterprise & SMEs Flashcards</h1>
+    <div class="sub">Tap the card to flip. Use ← / → keys or buttons to navigate. Swipe works too.</div>
 
-    <div class="card" id="card">
-      <div class="inner" id="inner">
-        <div class="face front" id="front"></div>
-        <div class="face back" id="back"></div>
+    <div class="stage">
+      <div class="card" id="card" aria-live="polite" role="button">
+        <div class="inner" id="inner">
+          <div class="face front"><div class="q" id="front"></div></div>
+          <div class="face back"><div class="a" id="back"></div></div>
+        </div>
       </div>
     </div>
 
-    <div class="nav">
-      <button id="prev">Previous</button>
-      <button id="next">Next</button>
+    <div class="controls">
+      <div class="group">
+        <button id="prev" class="outline" aria-label="Previous card">Previous</button>
+        <button id="flip" class="primary" aria-label="Flip card">Flip</button>
+        <button id="next" class="outline" aria-label="Next card">Next</button>
+      </div>
+      <div class="group">
+        <button id="shuffle" class="ghost" aria-label="Shuffle deck">Shuffle</button>
+        <span class="progress" id="progress">Card 1/20</span>
+      </div>
     </div>
-    <div class="progress" id="progress"></div>
   </div>
 
-  <script>
-    const cards = [
-      {q:"What is enterprise?",a:"The formation of a new business or development of a new good or service to be introduced to the market."},
-      {q:"What does SME stand for?",a:"Small or Medium Enterprise."},
-      {q:"How are small enterprises defined?",a:"Fewer than 50 employees and turnover less than €10m."},
-      {q:"How are medium enterprises defined?",a:"Fewer than 250 employees and turnover less than €50m."},
-      {q:"What proportion of the UK’s business population are SMEs?",a:"99.9%."},
-      {q:"How many people do SMEs employ in the UK?",a:"Around 14.4 million people."},
-      {q:"What is the difference between a need and a want?",a:"Needs = essentials for survival (food, shelter, water, clothing).\nWants = unlimited desires for a better quality of life (designer clothes, holidays, phones)."},
-      {q:"How can satisfying needs and wants give opportunities to entrepreneurs?",a:"By spotting gaps in the market and creating businesses that provide goods/services people want or need."},
-      {q:"List three ways entrepreneurs can identify business opportunities.",a:"• Gaps in the market.\n• Solving a problem.\n• Responding to changes in fashion, income, or population."},
-      {q:"Give two examples of modern businesses that used new marketplaces to succeed.",a:"Amazon and eBay."},
-      {q:"What is the role of the entrepreneur?",a:"To create, set up, run, and develop a business, providing goods and services customers want or need."},
-      {q:"Give two financial motives for entrepreneurs.",a:"Profit and income."},
-      {q:"Give two non-financial motives for entrepreneurs.",a:"Independence and personal satisfaction."},
-      {q:"Name three characteristics/skills of entrepreneurs.",a:"Creativity, risk-taking, resilience."},
-      {q:"What are the three sectors of the economy?",a:"Primary, Secondary, and Tertiary."},
-      {q:"Give an example of a business in the primary sector.",a:"Farming, oil extraction, fishing."},
-      {q:"Give an example of a business in the secondary sector.",a:"Manufacturing cars, making clothes, producing electronics."},
-      {q:"Give an example of a business in the tertiary sector.",a:"Estate agents, delivery services, gyms."},
-      {q:"Name three ways SMEs benefit the UK economy.",a:"Create jobs, pay taxes, introduce innovation."},
-      {q:"Name two disadvantages of SMEs.",a:"Small budgets/less R&D and more likely to fail in a recession."}
-    ];
+<script>
+  // Theme support via ?theme=light|dark
+  (function(){
+    const t=new URLSearchParams(location.search).get("theme");
+    if(t==="light"){ document.body.classList.add("light"); }
+  })();
 
-    // Shuffle each run
-    function shuffle(arr){ return arr.map(v=>({v,s:Math.random()})).sort((a,b)=>a.s-b.s).map(o=>o.v); }
-    const deck = shuffle(cards);
+  const data = [
+    {q:"What is enterprise?",a:"The formation of a new business or development of a new good or service to be introduced to the market."},
+    {q:"What does SME stand for?",a:"Small or Medium Enterprise."},
+    {q:"How are small enterprises defined?",a:"Fewer than 50 employees and turnover less than €10m."},
+    {q:"How are medium enterprises defined?",a:"Fewer than 250 employees and turnover less than €50m."},
+    {q:"What proportion of the UK’s business population are SMEs?",a:"99.9%."},
+    {q:"How many people do SMEs employ in the UK?",a:"Around 14.4 million people."},
+    {q:"What is the difference between a need and a want?",a:"Needs = essentials for survival (food, shelter, water, clothing).\nWants = unlimited desires for a better quality of life (designer clothes, holidays, phones)."},
+    {q:"How can satisfying needs and wants give opportunities to entrepreneurs?",a:"By spotting gaps in the market and creating businesses that provide goods/services people want or need."},
+    {q:"List three ways entrepreneurs can identify business opportunities.",a:"• Gaps in the market.\n• Solving a problem.\n• Responding to changes in fashion, income, or population."},
+    {q:"Give two examples of modern businesses that used new marketplaces to succeed.",a:"Amazon and eBay."},
+    {q:"What is the role of the entrepreneur?",a:"To create, set up, run, and develop a business, providing goods and services customers want or need."},
+    {q:"Give two financial motives for entrepreneurs.",a:"Profit and income."},
+    {q:"Give two non-financial motives for entrepreneurs.",a:"Independence and personal satisfaction."},
+    {q:"Name three characteristics/skills of entrepreneurs.",a:"Creativity, risk-taking, resilience."},
+    {q:"What are the three sectors of the economy?",a:"Primary, Secondary, and Tertiary."},
+    {q:"Give an example of a business in the primary sector.",a:"Farming, oil extraction, fishing."},
+    {q:"Give an example of a business in the secondary sector.",a:"Manufacturing cars, making clothes, producing electronics."},
+    {q:"Give an example of a business in the tertiary sector.",a:"Estate agents, delivery services, gyms."},
+    {q:"Name three ways SMEs benefit the UK economy.",a:"Create jobs, pay taxes, introduce innovation."},
+    {q:"Name two disadvantages of SMEs.",a:"Small budgets/less R&D and more likely to fail in a recession."}
+  ];
 
-    let i = 0;
-    const card = document.getElementById('card');
-    const front = document.getElementById('front');
-    const back = document.getElementById('back');
-    const progress = document.getElementById('progress');
+  const card = document.getElementById('card');
+  const inner = document.getElementById('inner');
+  const front = document.getElementById('front');
+  const back  = document.getElementById('back');
+  const progress = document.getElementById('progress');
 
-    function render(){
-      front.textContent = deck[i].q;
-      back.textContent = deck[i].a;
-      card.classList.remove('flipped');
-      progress.textContent = `Card ${i+1}/${deck.length}`;
-    }
+  const prevBtn = document.getElementById('prev');
+  const nextBtn = document.getElementById('next');
+  const flipBtn = document.getElementById('flip');
+  const shuffleBtn = document.getElementById('shuffle');
 
-    // Flip on tap — set class on the CARD (not the inner)
-    card.addEventListener('click', ()=> card.classList.toggle('flipped'));
+  function shuffle(arr){ return arr.map(v=>({v,s:Math.random()})).sort((a,b)=>a.s-b.s).map(o=>o.v); }
+  let deck = shuffle(data.slice());
+  let i = 0;
 
-    // Navigation
-    document.getElementById('next').addEventListener('click', (e)=>{ e.stopPropagation(); if(i<deck.length-1){ i++; render(); } });
-    document.getElementById('prev').addEventListener('click', (e)=>{ e.stopPropagation(); if(i>0){ i--; render(); } });
+  function render(){
+    front.textContent = deck[i].q;
+    back.textContent  = deck[i].a;
+    card.classList.remove('flipped');
+    progress.textContent = `Card ${i+1}/${deck.length}`;
+    // brief focus ring for keyboard users
+    flipBtn.classList.remove('ring'); setTimeout(()=>flipBtn.classList.add('ring'), 10);
+  }
 
-    render();
-  </script>
+  // Flip interactions
+  const flip = ()=> card.classList.toggle('flipped');
+  card.addEventListener('click', flip);
+  flipBtn.addEventListener('click', (e)=>{ e.stopPropagation(); flip(); });
+
+  // Navigation
+  function next(){ if(i<deck.length-1){ i++; render(); } }
+  function prev(){ if(i>0){ i--; render(); } }
+  nextBtn.addEventListener('click', e=>{ e.stopPropagation(); next(); });
+  prevBtn.addEventListener('click', e=>{ e.stopPropagation(); prev(); });
+
+  // Shuffle
+  shuffleBtn.addEventListener('click', e=>{
+    e.stopPropagation();
+    deck = shuffle(deck);
+    i = 0; render();
+  });
+
+  // Keyboard
+  window.addEventListener('keydown', e=>{
+    if(e.key==='ArrowRight') next();
+    else if(e.key==='ArrowLeft') prev();
+    else if(e.key===' ' || e.key==='Enter') flip();
+  });
+
+  // Touch swipe (simple)
+  let sx=0, dx=0;
+  card.addEventListener('touchstart', e=>{ sx=e.touches[0].clientX; }, {passive:true});
+  card.addEventListener('touchend', e=>{
+    dx = e.changedTouches[0].clientX - sx;
+    if(Math.abs(dx) > 40){ dx<0 ? next() : prev(); }
+  });
+
+  render();
+</script>
 </body>
 </html>
