@@ -3,103 +3,248 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Relevate Quick Quiz</title>
+  <title>Relevate • Enterprise Quiz</title>
   <style>
-    body {
-      margin: 0;
-      font-family: system-ui, sans-serif;
-      background: #111;
-      color: #fff;
-      text-align: center;
-      padding: 24px;
-    }
-    h2 {
-      margin-bottom: 16px;
-    }
-    .question {
-      margin: 20px 0;
-    }
-    button {
-      display: block;
-      margin: 8px auto;
-      padding: 10px 16px;
-      font-size: 16px;
-      border-radius: 8px;
-      border: none;
-      background: #f43f5e;
-      color: #fff;
-      cursor: pointer;
-      width: 80%;
-      max-width: 300px;
-      transition: background 0.2s ease;
-    }
-    button:hover {
-      background: #e11d48;
-    }
-    .result {
-      margin-top: 20px;
-      font-weight: bold;
-    }
+    body{margin:0;font-family:system-ui,sans-serif;background:#111;color:#fff;text-align:center;padding:24px}
+    h2{margin-bottom:12px}
+    .question{margin:20px 0;font-size:18px}
+    .options{display:flex;flex-direction:column;gap:10px;max-width:500px;margin:0 auto}
+    button{padding:12px;border:0;border-radius:8px;font-size:16px;cursor:pointer;background:#1f2937;color:#fff;transition:background .2s}
+    button:hover{background:#374151}
+    .correct{background:#10b981!important}
+    .wrong{background:#ef4444!important}
+    #result{margin-top:20px;font-size:18px;font-weight:bold}
   </style>
 </head>
 <body>
-  <h2>Quick Quiz</h2>
+  <h2>Enterprise & SMEs Quiz</h2>
   <div id="quiz"></div>
-  <div class="result" id="result"></div>
+  <div id="result"></div>
 
   <script>
     const questions = [
       {
-        q: "What is the capital of France?",
-        options: ["Berlin", "Madrid", "Paris", "Rome"],
-        answer: 2
+        q: "What is meant by the term enterprise?",
+        options: [
+          "The formation of a new business or development of a new good or service to be introduced to the market.",
+          "A company that only sells online.",
+          "Any large corporation with international offices.",
+          "A government-run organisation providing services."
+        ],
+        answer: 0
       },
       {
-        q: "Which planet is known as the Red Planet?",
-        options: ["Earth", "Mars", "Venus", "Jupiter"],
-        answer: 1
+        q: "What does SME stand for, and how are they defined?",
+        options: [
+          "Small or Medium Enterprise. Small: <50 employees/€10m turnover. Medium: <250 employees/€50m turnover.",
+          "Standard Market Enterprise, defined by market share above 5%.",
+          "Shared Market Entity, defined by joint ownership.",
+          "Small Monetary Establishment with under 100 employees."
+        ],
+        answer: 0
       },
       {
-        q: "In what year did World War II end?",
-        options: ["1942", "1945", "1948", "1950"],
-        answer: 1
+        q: "Approximately how many SMEs make up the UK’s business population?",
+        options: ["99.9%", "75%", "50%", "25%"],
+        answer: 0
+      },
+      {
+        q: "How many people are employed by SMEs in the UK?",
+        options: ["Around 14.4 million","Around 5 million","Around 25 million","Fewer than 1 million"],
+        answer: 0
+      },
+      {
+        q: "Explain the difference between needs and wants.",
+        options: [
+          "Needs are essential for survival; wants are unlimited desires for quality of life.",
+          "Needs and wants are both luxuries.",
+          "Needs change daily; wants never change.",
+          "Needs only apply to businesses; wants apply to individuals."
+        ],
+        answer: 0
+      },
+      {
+        q: "How can satisfying needs and wants create opportunities for entrepreneurs?",
+        options: [
+          "By spotting gaps in the market and meeting them, entrepreneurs can build successful enterprises.",
+          "By focusing only on needs and ignoring wants.",
+          "By setting the highest possible prices.",
+          "By copying competitors without innovation."
+        ],
+        answer: 0
+      },
+      {
+        q: "List three ways entrepreneurs can identify a business opportunity.",
+        options: [
+          "Spot a gap in the market; solve a problem; respond to lifestyle or population changes.",
+          "Wait for government grants; copy large corporations; ignore consumer feedback.",
+          "Focus only on reducing costs; avoid new technologies; limit creativity.",
+          "Close existing businesses; relocate abroad; downsize staff."
+        ],
+        answer: 0
+      },
+      {
+        q: "Give two modern examples of entrepreneurs using marketplaces.",
+        options: [
+          "Amazon and eBay — reduced costs and offered convenience online.",
+          "Blockbuster and HMV — focusing on physical stores.",
+          "Woolworths and Toys R Us — increasing retail prices.",
+          "Kodak and Nokia — ignoring digital change."
+        ],
+        answer: 0
+      },
+      {
+        q: "What is the role of the entrepreneur in a business?",
+        options: [
+          "To create, set up, run and develop a business.",
+          "To only finance the business but not manage it.",
+          "To replace government functions.",
+          "To avoid risk at all costs."
+        ],
+        answer: 0
+      },
+      {
+        q: "Give two financial and two non-financial motives for entrepreneurs.",
+        options: [
+          "Financial: profit, income. Non-financial: independence, satisfaction.",
+          "Financial: tax evasion, subsidies. Non-financial: laziness, avoidance.",
+          "Financial: savings accounts, pensions. Non-financial: hobbies, fashion.",
+          "Financial: reduce wages, cut corners. Non-financial: travel, leisure."
+        ],
+        answer: 0
+      },
+      {
+        q: "State three characteristics of successful entrepreneurs.",
+        options: [
+          "Creativity, resilience, decision-making.",
+          "Indifference, avoidance, passivity.",
+          "Laziness, dishonesty, impatience.",
+          "Wealth, inheritance, luck only."
+        ],
+        answer: 0
+      },
+      {
+        q: "What are the three sectors of the economy?",
+        options: [
+          "Primary (raw materials), Secondary (manufacturing), Tertiary (services).",
+          "Retail, Wholesale, E-commerce.",
+          "Financial, Political, Entertainment.",
+          "Private, Public, Charity."
+        ],
+        answer: 0
+      },
+      {
+        q: "Why are entrepreneurs and SMEs important to the UK economy?",
+        options: [
+          "They create jobs, pay tax, innovate, and drive competition.",
+          "They focus only on imports and reduce jobs.",
+          "They discourage investment and slow growth.",
+          "They are insignificant compared to large firms."
+        ],
+        answer: 0
+      },
+      {
+        q: "How much of UK private sector jobs and GDP do SMEs contribute?",
+        options: [
+          "67% of jobs and 50% of GDP.",
+          "10% of jobs and 10% of GDP.",
+          "90% of jobs and 90% of GDP.",
+          "25% of jobs and 40% of GDP."
+        ],
+        answer: 0
+      },
+      {
+        q: "Give three advantages SMEs bring to the UK economy.",
+        options: [
+          "Create jobs, generate wealth, encourage innovation.",
+          "Reduce competition, lower standards, discourage trade.",
+          "Only benefit shareholders, ignore communities.",
+          "Focus solely on cutting costs and avoiding tax."
+        ],
+        answer: 0
+      },
+      {
+        q: "Give two disadvantages of SMEs compared to larger businesses.",
+        options: [
+          "Smaller budgets and higher risk of failure.",
+          "Unlimited resources and guaranteed success.",
+          "Control of global markets and economies of scale.",
+          "Access to infinite government subsidies."
+        ],
+        answer: 0
+      },
+      {
+        q: "Why do SMEs often find it difficult to compete with larger businesses?",
+        options: [
+          "They have fewer resources, less recognition, and no economies of scale.",
+          "They are too dominant globally.",
+          "They receive too much funding.",
+          "They benefit from excess regulation."
+        ],
+        answer: 0
+      },
+      {
+        q: "Who are stakeholders? Give two examples.",
+        options: [
+          "Individuals or groups affected by a business, e.g. employees, customers.",
+          "Only shareholders and investors.",
+          "Any person unrelated to the business.",
+          "Only the CEO and board members."
+        ],
+        answer: 0
       }
     ];
 
-    let current = 0;
-    let score = 0;
+    let current = 0, score = 0;
 
-    function loadQuestion() {
-      const quiz = document.getElementById("quiz");
-      quiz.innerHTML = "";
-      if (current < questions.length) {
-        const q = questions[current];
-        const qElem = document.createElement("div");
-        qElem.className = "question";
-        qElem.innerHTML = `<p>${q.q}</p>`;
-        q.options.forEach((opt, i) => {
-          const btn = document.createElement("button");
-          btn.innerText = opt;
-          btn.onclick = () => checkAnswer(i);
-          qElem.appendChild(btn);
-        });
-        quiz.appendChild(qElem);
-      } else {
-        document.getElementById("result").innerText =
-          `Quiz complete! You scored ${score} / ${questions.length}.`;
-      }
+    function shuffleArray(arr){
+      return arr.map(v=>({v,sort:Math.random()}))
+                .sort((a,b)=>a.sort-b.sort)
+                .map(({v})=>v);
     }
 
-    function checkAnswer(i) {
-      if (i === questions[current].answer) {
+    // Shuffle questions once at start
+    const quizQuestions = shuffleArray(questions);
+
+    function loadQuestion(){
+      const q = quizQuestions[current];
+      const quiz = document.getElementById("quiz");
+      quiz.innerHTML = `<div class="question">${q.q}</div><div class="options"></div>`;
+      const optionsDiv = quiz.querySelector(".options");
+
+      // Prepare options with correctness flag
+      const optionObjs = q.options.map((opt,idx)=>({text:opt,isCorrect:idx===q.answer}));
+      const shuffled = shuffleArray(optionObjs);
+
+      shuffled.forEach(opt=>{
+        const btn=document.createElement("button");
+        btn.textContent=opt.text;
+        btn.onclick=()=>checkAnswer(opt.isCorrect,btn,optionsDiv,q);
+        optionsDiv.appendChild(btn);
+      });
+    }
+
+    function checkAnswer(isCorrect,btn,optionsDiv,q){
+      const allBtns = optionsDiv.querySelectorAll("button");
+      if(isCorrect){
+        btn.classList.add("correct");
         score++;
+      } else {
+        btn.classList.add("wrong");
+        allBtns.forEach(b=>{
+          if(b.textContent===q.options[q.answer]){
+            b.classList.add("correct");
+          }
+        });
       }
-      current++;
-      loadQuestion();
+      setTimeout(()=>{
+        current++;
+        if(current<quizQuestions.length) loadQuestion();
+        else document.getElementById("result").textContent=`Quiz complete! You scored ${score}/${quizQuestions.length}`;
+      },1000);
     }
 
     loadQuestion();
   </script>
 </body>
 </html>
-
